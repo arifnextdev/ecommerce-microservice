@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import { createProduct, getProductDetails, getProducts } from "./controllers";
 
 dotenv.config();
 
@@ -16,6 +17,9 @@ app.get("/health", (_req, res) => {
 });
 
 //routes
+app.get("/products", getProducts);
+app.get("/products/:id", getProductDetails);
+app.post("/products", createProduct);
 
 //404
 app.use((_req, res) => {
