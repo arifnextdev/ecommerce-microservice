@@ -13,6 +13,7 @@
         }
       ]
     },
+
     "inventorys": {
       "url": "http://localhost:4002",
       "routes": [
