@@ -19,7 +19,17 @@ export const createHandler = (
         method,
         url,
         data: req.body,
+        headers: {
+          origin: "http://localhost:8081",
+          "x-user-id": req.headers["x-user-id"] || "",
+          "x-user-email": req.headers["x-user-email"] || "",
+          "x-user-name": req.headers["x-user-name"] || "",
+          "x-user-role": req.headers["x-user-role"] || "",
+          "user-agent": req.headers["user-agent"],
+        },
       });
+
+      console.log(`Request to ${url} with method ${method}`);
 
       res.json(data);
     } catch (error) {
@@ -38,6 +48,7 @@ export const configureRoutes = (app: Express) => {
     service.routes.forEach((route) => {
       route.methods.forEach((method) => {
         const handler = createHandler(hostname, route.path, method);
+        console.log(`Configuring route ${method} ${route.path}`);
         const endPoint = `/api${route.path}`;
         app[method](endPoint, handler);
       });
