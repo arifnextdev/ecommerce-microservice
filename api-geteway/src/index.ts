@@ -32,9 +32,15 @@ app.get("/health", (_req, res) => {
 //Routes
 configureRoutes(app);
 
+//404
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not Found" });
+});
+
 //error handler
 app.use((err: any, _req: any, res: any, _next: any) => {
-  res.status(500).json({ error: err.message });
+  console.log(err);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
 app.listen(process.env.PORT, () => {

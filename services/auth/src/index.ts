@@ -16,6 +16,7 @@ app.get("/health", (_req, res) => {
 });
 
 //routes
+app.use("/users");
 
 //404
 app.use((_req, res) => {
@@ -28,7 +29,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 });
 
 const port = process.env.PORT || 4004;
-const SERVICE_NAME = process.env.SERVICE_NAME || "USER SERVICE";
+const SERVICE_NAME = process.env.SERVICE_NAME || "AUTH SERVICE";
 
 app.listen(port, () => {
   console.log(`${SERVICE_NAME} listening on port ${port}`);

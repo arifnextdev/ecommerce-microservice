@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  user
+}
+
+enum AccountStatus {
+  pending
+  inactive
+  active
+  suspended
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  password String 
+  role Role @default(admin)
+  veryfied Boolean @default(false)
+  status AccountStatus @default(pending)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  history History[]
+  veryficationCodes VeryficationCode[]
+}
+
+enum LoginAttemt {
+  success
+  faild
+}
+
+model History {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+  attempt LoginAttemt @default(success)
+  loginAt DateTime @default(now())
+}
+
+
+enum veryficationStatus {
+  pending
+  used 
+  expired
+}
+
+enum veryficationCodeType {
+  accountActivation
+  passwordReset
+  Email_change
+  two_fact_enable
+
+}
+
+model VeryficationCode {
+id String @id @default(cuid())
+userId String
+user User @relation(fields: [userId],references: [id], onDelete: Cascade)
+status veryficationStatus @default(pending)
+code String
+type veryficationCodeType @default(accountActivation)
+isseAt DateTime @default(now())
+expiredAt DateTime
+veryfiedAt DateTime
+}
