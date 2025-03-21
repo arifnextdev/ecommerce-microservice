@@ -14,24 +14,24 @@ datasource db {
 }
 
 enum Role {
-  admin
-  user
+  ADMIN
+  USER
 }
 
 enum AccountStatus {
-  pending
-  inactive
-  active
-  suspended
+  PENDING
+  INACTIVE
+  ACTIVE
+  SUSPEND
 }
 
 model User {
   id String @id @default(cuid())
   email String @unique
   password String 
-  role Role @default(admin)
+  role Role @default(ADMIN)
   veryfied Boolean @default(false)
-  status AccountStatus @default(pending)
+  status AccountStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   history History[]
@@ -39,8 +39,8 @@ model User {
 }
 
 enum LoginAttemt {
-  success
-  faild
+  SUCCESS
+  FAILD
 }
 
 model History {
@@ -49,33 +49,36 @@ model History {
   user User @relation(fields: [userId],references: [id],onDelete: Cascade)
   ipAddress String?
   userAgent String?
-  attempt LoginAttemt @default(success)
+  attempt LoginAttemt @default(SUCCESS)
   loginAt DateTime @default(now())
 }
 
 
 enum veryficationStatus {
-  pending
-  used 
-  expired
+  PENDING
+  USED 
+  EXPIRED
 }
 
 enum veryficationCodeType {
-  accountActivation
-  passwordReset
-  Email_change
-  two_fact_enable
+  AccOUNT_ACTIVATION
+  PASSWORD_RESET
+  EMAIL_CHANGED
+  TWO_FACT_ENABLE
+  TWO_FACT_DISABLE
 
 }
 
 model VeryficationCode {
+
 id String @id @default(cuid())
 userId String
 user User @relation(fields: [userId],references: [id], onDelete: Cascade)
-status veryficationStatus @default(pending)
+status veryficationStatus @default(PENDING)
 code String
-type veryficationCodeType @default(accountActivation)
+type veryficationCodeType @default(AccOUNT_ACTIVATION)
 isseAt DateTime @default(now())
 expiredAt DateTime
-veryfiedAt DateTime
+veryfiedAt DateTime?
+
 }
