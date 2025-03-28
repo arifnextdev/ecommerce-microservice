@@ -10,7 +10,8 @@ const createNewUser = async (
   try {
     const parseBody = userCreateSchema.safeParse(req.body);
     if (!parseBody.success) {
-      return res.status(400).json({ error: parseBody.error });
+      res.status(400).json({ error: parseBody.error });
+      return;
     }
 
     const exitUser = await prisma.user.findUnique({
@@ -20,7 +21,8 @@ const createNewUser = async (
     });
 
     if (exitUser) {
-      return res.status(400).json({ error: "User already exist" });
+      res.status(400).json({ error: "User already exist" });
+      return;
     }
 
     const user = await prisma.user.create({

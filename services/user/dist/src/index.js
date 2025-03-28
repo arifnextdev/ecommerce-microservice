@@ -24,8 +24,8 @@ app.use((_req, res) => {
 app.use((err, _req, res, _next) => {
     res.status(err.status || 500).json({ error: err.message });
 });
-const port = process.env.PORT || 4001;
-const SERVICE_NAME = process.env.SERVICE_NAME || "PRODUCTS SERVICE";
+const port = process.env.PORT || 4004;
+const SERVICE_NAME = process.env.SERVICE_NAME || "USER SERVICE";
 app.listen(port, () => {
     console.log(`${SERVICE_NAME} listening on port ${port}`);
 });

@@ -17,10 +17,8 @@ app.get("/health", (_req, res) => {
     res.status(200).send("UP");
 });
 //routes
-app.post("/auth/registion", controller_1.userRegistion);
-app.post("/auth/login", controller_1.userLogin);
-app.post("auth/verify-token", controller_1.userVerify);
-app.post("/auth/verify-email", controller_1.verifyEmail);
+app.post("/email/send", controller_1.sentEmail);
+app.get("/emails", controller_1.getEmails);
 //404
 app.use((_req, res) => {
     res.status(404).json({ error: "Endpoint not found" });
@@ -29,8 +27,8 @@ app.use((_req, res) => {
 app.use((err, _req, res, _next) => {
     res.status(err.status || 500).json({ error: err.message });
 });
-const port = process.env.PORT || 4005;
-const SERVICE_NAME = process.env.SERVICE_NAME || "EMAIL SERVICE";
+const port = process.env.PORT || 4004;
+const SERVICE_NAME = process.env.SERVICE_NAME || "Email SERVICE";
 app.listen(port, () => {
     console.log(`${SERVICE_NAME} listening on port ${port}`);
 });

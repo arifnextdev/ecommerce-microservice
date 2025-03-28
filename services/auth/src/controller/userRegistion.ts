@@ -1,9 +1,19 @@
-import { USER_SERVICE_URL } from "./../config";
 import { Request, Response, NextFunction } from "express";
 import prisma from "@/prisma";
 import { userCreateSchema } from "../schemas";
 import becrypt from "bcryptjs";
 import axios from "axios";
+import { EMAIL_SERVICE_URL, USER_SERVICE_URL } from "@/config";
+
+const generateVerificationCode = () => {
+  const timeStamp = Date.now().toString();
+  const randomNumber = Math.floor(10 + Math.random() * 90);
+
+  let code = `${timeStamp}${randomNumber}`.slice(-5);
+
+  return code;
+};
+
 const userRegistion = async (
   req: Request,
   res: Response,
@@ -51,7 +61,7 @@ const userRegistion = async (
 
     console.log("User created successfully", user);
 
-    await axios.post(`${process.env.USER_SERVICE_URL}/users`, {
+    await axios.post(`${USER_SERVICE_URL}/users`, {
       authUserId: user.id,
       name: user.name,
       email: user.email,
@@ -59,9 +69,30 @@ const userRegistion = async (
 
     //Generate Verification code
 
-    //Code send to user by email
+    const verificationCode = generateVerificationCode();
 
-    res.status(201).json({ message: "User created successfully", user });
+    await prisma.veryficationCode.create({
+      data: {
+        userId: user.id,
+        code: verificationCode,
+        expiredAt: new Date(Date.now() + 1000 * 60 * 60 * 24), //24 hours
+      },
+    });
+
+    //Code send to user by email
+    await axios.post(`${EMAIL_SERVICE_URL}/email/send`, {
+      recipient: user.email,
+      subject: "Email Verification",
+      body: `Your verification code is ${verificationCode}`,
+      source: "User Registion",
+    });
+
+    res
+      .status(201)
+      .json({
+        message: "User created, check your email for verification code",
+        user,
+      });
   } catch (error) {
     next(error);
   }

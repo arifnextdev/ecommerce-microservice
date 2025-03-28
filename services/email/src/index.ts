@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { createUser } from "./controller";
+import { getEmails, sentEmail } from "./controller";
 
 dotenv.config();
 
@@ -17,7 +17,9 @@ app.get("/health", (_req, res) => {
 });
 
 //routes
-app.post("/users", createUser);
+
+app.post("/email/send", sentEmail);
+app.get("/emails", getEmails);
 
 //404
 app.use((_req, res) => {
@@ -30,7 +32,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 });
 
 const port = process.env.PORT || 4004;
-const SERVICE_NAME = process.env.SERVICE_NAME || "USER SERVICE";
+const SERVICE_NAME = process.env.SERVICE_NAME || "Email SERVICE";
 
 app.listen(port, () => {
   console.log(`${SERVICE_NAME} listening on port ${port}`);

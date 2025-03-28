@@ -2,7 +2,12 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { userLogin, userRegistion, userVerify } from "./controller";
+import {
+  userLogin,
+  userRegistion,
+  userVerify,
+  verifyEmail,
+} from "./controller";
 
 dotenv.config();
 
@@ -19,7 +24,8 @@ app.get("/health", (_req, res) => {
 //routes
 app.post("/auth/registion", userRegistion);
 app.post("/auth/login", userLogin);
-app.post("auth/verify", userVerify);
+app.post("auth/verify-token", userVerify);
+app.post("/auth/verify-email", verifyEmail);
 
 //404
 app.use((_req, res) => {
@@ -31,8 +37,8 @@ app.use((err: any, _req: any, res: any, _next: any) => {
   res.status(err.status || 500).json({ error: err.message });
 });
 
-const port = process.env.PORT || 4004;
-const SERVICE_NAME = process.env.SERVICE_NAME || "AUTH SERVICE";
+const port = process.env.PORT || 4005;
+const SERVICE_NAME = process.env.SERVICE_NAME || "EMAIL SERVICE";
 
 app.listen(port, () => {
   console.log(`${SERVICE_NAME} listening on port ${port}`);
