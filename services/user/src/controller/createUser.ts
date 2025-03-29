@@ -6,7 +6,7 @@ const createNewUser = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const parseBody = userCreateSchema.safeParse(req.body);
     if (!parseBody.success) {

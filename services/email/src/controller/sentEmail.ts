@@ -8,6 +8,8 @@ const sentEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const parseBody = emailSchema.safeParse(req.body);
 
+    console.log("parseBody", parseBody.error?.errors);
+
     if (!parseBody.success) {
       res.status(400).json(parseBody.error);
       return;
@@ -15,6 +17,7 @@ const sentEmail = async (req: Request, res: Response, next: NextFunction) => {
 
     const { recipient, subject, body, sender, source } = parseBody.data;
 
+    console.log("rejected");
     const from = sender || default_sender;
 
     const emailOptions = {

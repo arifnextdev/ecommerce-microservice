@@ -18,34 +18,31 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
 
     const user = await prisma.user.findUnique({
       where: {
-        id: parseBody.data.email,
+        email: parseBody.data.email,
       },
     });
 
     if (!user) {
-      res.status(400).json({ error: "Invalid Creadentials" });
+      res.status(400).json({ message: "Invalid Creadentials" });
       return;
     }
 
-    const verifyCode = await prisma.veryficationCode.findFirst({
+    const verificationCode = await prisma.veryficationCode.findFirst({
       where: {
         userId: user.id,
         code: parseBody.data.code,
       },
     });
 
-    if (!verifyCode) {
-      res.status(400).json({ error: "Invalid Creadentials" });
+    console.log("verifyCode", verificationCode);
+
+    if (!verificationCode) {
+      res.status(400).json({ message: "Invalid Verification Code" });
       return;
     }
 
-    if (verifyCode.code !== parseBody.data.code) {
-      res.status(400).json({ error: "Invalid Code" });
-      return;
-    }
-
-    if (verifyCode.expiredAt < new Date()) {
-      res.status(400).json({ error: "Code Expired" });
+    if (verificationCode.expiredAt < new Date()) {
+      res.status(400).json({ error: " Verification Code Expired" });
       return;
     }
 
@@ -62,7 +59,7 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
     ///Update verification code
     await prisma.veryficationCode.update({
       where: {
-        id: verifyCode.id,
+        id: verificationCode.id,
       },
       data: {
         status: "USED",
@@ -74,7 +71,7 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
       recipient: user.email,
       subject: "Account Verification",
       body: `Hello ${user.name} your account has been verified successfully`,
-      srouce: "VERIFY_EMAIL",
+      source: "VERIFY_EMAIL",
     });
 
     res.status(200).json({ message: "Email verified" });
