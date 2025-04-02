@@ -31,7 +31,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
   res.status(err.status || 500).json({ error: err.message });
 });
 
-const port = process.env.PORT || 4004;
+const port = process.env.PORT || 4005;
 const SERVICE_NAME = process.env.SERVICE_NAME || "Email SERVICE";
 
 app.listen(port, () => {

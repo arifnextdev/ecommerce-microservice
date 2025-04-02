@@ -32,15 +32,16 @@ const userVerify = async (
         email: true,
         name: true,
         role: true,
+        status: true,
       },
     });
 
-    if (!user) {
+    if (!user || user.status !== "ACTIVE") {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    res.status(200).json({ message: "Authorized", user });
+    res.status(200).json({ user });
   } catch (error) {
     next(error);
   }

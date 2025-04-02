@@ -34,15 +34,18 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
 
-    console.log("verifyCode", verificationCode);
-
     if (!verificationCode) {
       res.status(400).json({ message: "Invalid Verification Code" });
       return;
     }
 
     if (verificationCode.expiredAt < new Date()) {
-      res.status(400).json({ error: " Verification Code Expired" });
+      res.status(400).json({ message: " Verification Code Expired" });
+      return;
+    }
+
+    if (verificationCode.status === "USED") {
+      res.status(400).json({ message: "Verification Code Already Used" });
       return;
     }
 
