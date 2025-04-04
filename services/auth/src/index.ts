@@ -22,7 +22,7 @@ app.get("/health", (_req, res) => {
 });
 
 //routes
-app.post("/auth/registion", userRegistion);
+app.post("/auth/register", userRegistion);
 app.post("/auth/login", userLogin);
 app.post("/auth/verify-token", userVerify);
 app.post("/auth/verify-email", verifyEmail);
