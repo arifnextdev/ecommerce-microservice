@@ -110,7 +110,7 @@ const userLogin = async (
 
       (process.env.JWT_SCRECT_KEY as string) || "my-screct-key",
       {
-        expiresIn: "30d",
+        expiresIn: "24h",
       }
     );
 
