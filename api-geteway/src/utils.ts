@@ -30,8 +30,6 @@ export const createHandler = (
         },
       });
 
-      console.log(`Request to ${url} with method ${method}`);
-
       res.json(data);
     } catch (error) {
       if (error instanceof axios.AxiosError) {

@@ -9,8 +9,6 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    console.log("[AUTH MIDDLEWARE] Token: ", token);
-
     const { data } = await axios.post(
       `http://localhost:4003/auth/verify-token`,
       {
