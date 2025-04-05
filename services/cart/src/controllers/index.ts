@@ -1,1 +1,2 @@
-export { default as CartController } from "./addToCart";
+export { default as addToCart } from "./addToCart";
+export { default as getMyCart } from "./getMyCart";
