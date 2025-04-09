@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { addToCart, getMyCart } from "./controllers";
+import "@/events/onKeyExpier";
 
 dotenv.config();
 

@@ -1,6 +1,7 @@
-import { CART_TTL } from "@/config";
+import { CART_TTL, INVENTORY_SERVICE_URL } from "@/config";
 import redis from "@/redis";
 import { CartItemSchema } from "@/schemas";
+import axios from "axios";
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuid } from "uuid";
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,8 +14,13 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
 
     let cartSesstionId = (req.headers["x-cart-session-id"] as string) || null;
 
+    if (!cartSesstionId) {
+      cartSesstionId = req.cookies["x-cart-session-id"] || null;
+    }
+
     if (cartSesstionId) {
       const exist = await redis.exists(`sessions:${cartSesstionId}`);
+      console.log("session exist", exist);
       if (!exist) {
         cartSesstionId = null;
       }
@@ -25,14 +31,23 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
 
       console.log("Creating new cart session id", cartSesstionId);
 
-      await redis.setex(
-        `sessions:${cartSesstionId}`,
-        CART_TTL,
-        JSON.stringify([])
-      );
+      await redis.setex(`sessions:${cartSesstionId}`, CART_TTL, cartSesstionId);
       res.setHeader("x-cart-session-id", cartSesstionId);
 
       console.log("Setting cart session id in cookie", cartSesstionId);
+    }
+
+    //Check the Inventory is available
+
+    const { data } = await axios.get(
+      `${INVENTORY_SERVICE_URL}/inventorys/${parseBody.data?.inventoryId}`
+    );
+
+    if (Number(data.quantity) < parseBody.data?.quantity) {
+      res.status(400).json({
+        message: "Inventory is not available",
+      });
+      return;
     }
 
     await redis.hset(
@@ -42,6 +57,14 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
         quantity: parseBody.data?.quantity,
         inventoryId: parseBody.data?.inventoryId,
       })
+    );
+
+    await axios.put(
+      `${INVENTORY_SERVICE_URL}/inventorys/${parseBody.data?.inventoryId}`,
+      {
+        quantity: parseBody.data?.quantity,
+        actionType: "OUT",
+      }
     );
 
     res.status(200).json({
