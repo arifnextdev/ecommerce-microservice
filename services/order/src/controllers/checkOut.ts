@@ -2,7 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "@/prisma";
 import axios from "axios";
 import { CartItemSchema, orderSchema } from "@/schemas";
-import { CART_SERVICE_URL, EMAIL_SERVICE_URL } from "@/config";
+import {
+  CART_SERVICE_URL,
+  EMAIL_SERVICE_URL,
+  PRODUCT_SERVICE_URL,
+} from "@/config";
 import { z } from "zod";
 
 const checkOut = async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +25,7 @@ const checkOut = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
 
-    const cartItems = z.array(CartItemSchema).safeParse(cartData);
+    const cartItems = z.array(CartItemSchema).safeParse(cartData.data);
     if (!cartItems.success) {
       res.status(400).json({ error: cartItems.error.errors });
       return;
@@ -35,16 +39,18 @@ const checkOut = async (req: Request, res: Response, next: NextFunction) => {
     //get Product Details from cart items
     const productDetails = await Promise.all(
       cartItems.data.map(async (item) => {
-        const { data } = await axios.get(
-          `${CART_SERVICE_URL}/products/${item.productId}`
+        console.log("Item", item);
+        const { data: product } = await axios.get(
+          `${PRODUCT_SERVICE_URL}/products/${item.productId}`
         );
+
         return {
-          productId: data.id as string,
-          productName: data.name as string,
-          sku: data.sku as string,
-          price: data.price as number,
+          productId: product.id as string,
+          productName: product.name as string,
+          sku: product.sku as string,
+          price: product.price as number,
           quantity: item.quantity as number,
-          total: data.price * item.quantity,
+          total: product.price * item.quantity,
         };
       })
     );
@@ -70,6 +76,7 @@ const checkOut = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     });
+    console.log("Order Created");
 
     //clear cart
     await axios.get(`${CART_SERVICE_URL}/cart/clear`, {
@@ -77,6 +84,7 @@ const checkOut = async (req: Request, res: Response, next: NextFunction) => {
         "x-cart-session-id": parseBody.data.cartSessionId,
       },
     });
+    console.log("Cart cleared successfully");
 
     //Send Email
     await axios.post(`${EMAIL_SERVICE_URL}/email/send`, {
@@ -85,7 +93,8 @@ const checkOut = async (req: Request, res: Response, next: NextFunction) => {
       body: `Your order has been placed successfully. Order ID: ${order.id}, Your Order Total: ${grandTotal}`,
       source: "checkout",
     });
-    res.status(201).json(order);
+    console.log("Email sent successfully");
+    res.status(201).json("Order placed successfully");
   } catch (error) {
     next(error);
   }

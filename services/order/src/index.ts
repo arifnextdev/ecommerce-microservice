@@ -20,7 +20,7 @@ app.get("/health", (_req, res) => {
 //routes
 app.post("/orders/checkout", checkOut);
 app.get("/orders", getOrders);
-app.get("orders/:id", getOrderById);
+app.get("/orders/:id", getOrderById);
 
 //404
 app.use((_req, res) => {

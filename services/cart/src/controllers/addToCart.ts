@@ -52,7 +52,7 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
 
     await redis.hset(
       `carts:${cartSesstionId}`,
-      parseBody.data?.inventoryId,
+      parseBody.data?.productId,
       JSON.stringify({
         quantity: parseBody.data?.quantity,
         inventoryId: parseBody.data?.inventoryId,
