@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import { addToCart, getMyCart } from "./controllers";
+import { addToCart, clearCart, getMyCart } from "./controllers";
 import "@/events/onKeyExpier";
 
 dotenv.config();
@@ -32,6 +32,8 @@ app.get("/health", (_req, res) => {
 
 app.post("/cart", addToCart);
 app.get("/cart/me", getMyCart);
+app.get("/cart/clear", clearCart);
+
 //404
 app.use((_req, res) => {
   res.status(404).json({ error: "Not Found" });
